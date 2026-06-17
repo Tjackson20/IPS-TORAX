@@ -28,15 +28,16 @@ def build_torax_input():
         "psi_profile": equilibrium["psi"],
         "plasma_current": equilibrium["plasma_current"],
         "r0": equilibrium["r0"],
-"b0": equilibrium["b0"],
-"volume": equilibrium["volume"],
-"area": equilibrium["area"],
-"elongation": equilibrium["elongation"],
-"triangularity_upper": equilibrium["triangularity_upper"],
-"triangularity_lower": equilibrium["triangularity_lower"],
+        "b0": equilibrium["b0"],
+        "volume": equilibrium["volume"],
+        "area": equilibrium["area"],
+        "elongation": equilibrium["elongation"],
+        "triangularity_upper": equilibrium["triangularity_upper"],
+        "triangularity_lower": equilibrium["triangularity_lower"],
 
         # Source information
         "source_names": sources["source_names"],
+        "source_info": sources["source_info"],
     }
 
     return torax_input
@@ -50,4 +51,30 @@ if __name__ == "__main__":
     print("\nKeys:")
     for key in torax_input:
         print("-", key)
-        
+
+    print("\n=== SOURCE CHECK ===")
+
+    for source_name in ["nbi", "fusion", "ohmic"]:
+        if source_name in torax_input["source_info"]:
+
+            info = torax_input["source_info"][source_name]
+
+            print(f"\n{source_name.upper()}")
+
+            if "electron_energy" in info:
+                print(
+                    "Electron energy first 5:",
+                    info["electron_energy"][:5]
+                )
+
+            if "ion_energy" in info:
+                print(
+                    "Ion energy first 5:",
+                    info["ion_energy"][:5]
+                )
+
+            if "j_parallel" in info:
+                print(
+                    "Current profile first 5:",
+                    info["j_parallel"][:5]
+                )
