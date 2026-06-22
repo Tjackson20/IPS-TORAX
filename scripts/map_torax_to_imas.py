@@ -1,9 +1,27 @@
+from pathlib import Path
 import xarray as xr
 
 
-def read_torax_output(
-    output_file="/tmp/torax_results/state_history_20260618_102656.nc",
-):
+def get_latest_torax_output(output_dir="/tmp/torax_results"):
+    output_path = Path(output_dir)
+    files = sorted(output_path.glob("state_history_*.nc"))
+
+    if not files:
+        raise FileNotFoundError(
+            f"No TORAX output files found in {output_dir}. "
+            "Run TORAX first."
+        )
+
+    return str(files[-1])
+
+
+def read_torax_output(output_file=None):
+    if output_file is None:
+        output_file = get_latest_torax_output()
+
+    print("Reading TORAX output file:")
+    print(output_file)
+
     profiles = xr.open_dataset(output_file, group="profiles")
     scalars = xr.open_dataset(output_file, group="scalars")
 
@@ -31,7 +49,7 @@ def read_torax_output(
 if __name__ == "__main__":
     data = read_torax_output()
 
-    print("TORAX output loaded successfully")
+    print("\nTORAX output loaded successfully")
 
     print("\nKeys:")
     for key in data:
