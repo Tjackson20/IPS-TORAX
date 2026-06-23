@@ -2,7 +2,7 @@ from pathlib import Path
 import xarray as xr
 
 
-def get_latest_torax_output(output_dir="/tmp/torax_results"):
+def get_latest_torax_output(output_dir="torax_outputs/imas_direct_minimal"):
     output_path = Path(output_dir)
     files = sorted(output_path.glob("state_history_*.nc"))
 
