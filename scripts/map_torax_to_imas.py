@@ -15,7 +15,7 @@ def get_latest_torax_output(output_dir="torax_outputs/imas_direct_minimal"):
     return str(files[-1])
 
 
-def read_torax_output(output_file=None):
+def read_torax_output(output_file=None, time_index=-1):
     if output_file is None:
         output_file = get_latest_torax_output()
 
@@ -27,20 +27,20 @@ def read_torax_output(output_file=None):
 
     torax_data = {
         # Profile outputs
-        "electron_temperature": profiles["T_e"].values[-1],
-        "ion_temperature": profiles["T_i"].values[-1],
-        "electron_density": profiles["n_e"].values[-1],
-        "q_profile": profiles["q"].values[-1],
-        "psi_profile": profiles["psi"].values[-1],
-        "current_profile": profiles["j_total"].values[-1],
-        "pressure_profile": profiles["pressure_total"].values[-1],
+        "electron_temperature": profiles["T_e"].values[time_index],
+        "ion_temperature": profiles["T_i"].values[time_index],
+        "electron_density": profiles["n_e"].values[time_index],
+        "q_profile": profiles["q"].values[time_index],
+        "psi_profile": profiles["psi"].values[time_index],
+        "current_profile": profiles["j_total"].values[time_index],
+        "pressure_profile": profiles["pressure_total"].values[time_index],
 
         # Scalar outputs
-        "plasma_current": scalars["Ip"].values[-1],
-        "tau_E": scalars["tau_E"].values[-1],
-        "fusion_power": scalars["P_fusion"].values[-1],
-        "fusion_gain": scalars["Q_fusion"].values[-1],
-        "q95": scalars["q95"].values[-1],
+        "plasma_current": scalars["Ip"].values[time_index],
+        "tau_E": scalars["tau_E"].values[time_index],
+        "fusion_power": scalars["P_fusion"].values[time_index],
+        "fusion_gain": scalars["Q_fusion"].values[time_index],
+        "q95": scalars["q95"].values[time_index],
     }
 
     return torax_data

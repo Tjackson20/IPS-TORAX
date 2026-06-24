@@ -1,6 +1,7 @@
 """Minimal TORAX configuration driven directly by local IMAS HDF5 IDSs."""
 
 import copy
+import os
 
 import imas
 from torax._src.imas_tools.input import core_profiles
@@ -10,6 +11,14 @@ from torax._src.imas_tools.input import loader
 
 IMAS_URI = "imas:hdf5?path=data"
 T_INITIAL = 0.0
+T_FINAL = float(os.environ.get("TORAX_T_FINAL", "0.1"))
+FIXED_DT = float(os.environ.get("TORAX_FIXED_DT", "0.1"))
+N_RHO = int(os.environ.get("TORAX_N_RHO", "25"))
+DISABLED_SOURCES = {
+    source.strip()
+    for source in os.environ.get("TORAX_DISABLE_SOURCES", "").split(",")
+    if source.strip()
+}
 
 
 def _with_initial_time(value, t_initial=T_INITIAL):
@@ -51,6 +60,9 @@ def _sources_from_imas(core_sources_ids):
     # when the IMAS source is prescribed. Keep the minimal baseline runnable.
     sources.pop("icrh", None)
 
+    for source_name in DISABLED_SOURCES:
+        sources.pop(source_name, None)
+
     for source_name in list(sources):
         source_config = sources[source_name]
         prescribed_values = []
@@ -85,7 +97,7 @@ def build_config():
             "geometry_type": "IMAS",
             "imas_uri": IMAS_URI,
             "explicit_convert": True,
-            "n_rho": 25,
+            "n_rho": N_RHO,
             "slice_index": 0,
         },
         "sources": _sources_from_imas(core_sources_ids),
@@ -98,8 +110,8 @@ def build_config():
         },
         "numerics": {
             "t_initial": T_INITIAL,
-            "t_final": 0.1,
-            "fixed_dt": 0.1,
+            "t_final": T_FINAL,
+            "fixed_dt": FIXED_DT,
             "evolve_current": True,
             "evolve_ion_heat": True,
             "evolve_electron_heat": True,
@@ -120,5 +132,7 @@ CONFIG = build_config()
 if __name__ == "__main__":
     print("Built direct IMAS-driven TORAX config")
     print("Geometry:", CONFIG["geometry"])
+    print("Numerics:", CONFIG["numerics"])
+    print("Disabled sources:", sorted(DISABLED_SOURCES))
     print("Sources:", sorted(CONFIG["sources"]))
     print("Profile condition keys:", sorted(CONFIG["profile_conditions"]))
