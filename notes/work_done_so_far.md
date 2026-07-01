@@ -123,6 +123,34 @@ It prints useful information like:
 - q95,
 - total thermal stored energy.
 
+### `scripts/compare_torax_runs.py`
+
+This file compares two TORAX runs across the full radial profile.
+
+It compares a baseline output folder against an experiment output folder. It
+checks:
+
+- `T_e`
+- `T_i`
+- `n_e`
+- `q`
+
+For each profile, it prints:
+
+- RMS difference,
+- maximum absolute difference,
+- maximum percent difference.
+
+This is better than only checking the center value because it tells us how much
+the whole plasma profile changed across radius.
+
+Example:
+
+```bash
+/home/teliyah/miniforge3/envs/TORAX/bin/python scripts/compare_torax_runs.py \
+  --experiment torax_outputs/no_fusion
+```
+
 ### `notes/direct_imas_torax_baseline.md`
 
 This note explains the baseline run.

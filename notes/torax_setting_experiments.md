@@ -206,3 +206,221 @@ Next suggested experiment:
 
 - Turn off `fusion`, keeping `ecrh`, `ohmic`, and `ei_exchange`
 - Compare how much fusion self-heating affects `T_e`, `T_i`, and `P_fusion`
+
+## Experiment 4: Turn Off Fusion
+
+Question:
+
+How much does the fusion source affect the short baseline run?
+
+Baseline:
+
+- Output directory: `torax_outputs/imas_direct_minimal`
+- Sources from IMAS:
+  - `ecrh`
+  - `fusion`
+  - `ohmic`
+  - `ei_exchange`
+- `t_final = 0.1`
+- `fixed_dt = 0.1`
+- `n_rho = 25`
+
+Experiment:
+
+- Output directory: `torax_outputs/no_fusion`
+- Changed setting: `TORAX_DISABLE_SOURCES=fusion`
+- Remaining sources:
+  - `ecrh`
+  - `ohmic`
+  - `ei_exchange`
+- All other settings kept the same.
+
+Run command:
+
+```bash
+TORAX_DISABLE_SOURCES=fusion /home/teliyah/miniforge3/envs/TORAX/bin/python \
+  -m torax.run_simulation_main \
+  --config=scripts/imas_torax_config.py \
+  --quit \
+  --output_dir=torax_outputs/no_fusion
+```
+
+Latest experiment output:
+
+```text
+torax_outputs/no_fusion/state_history_20260624_114155.nc
+```
+
+Final-state comparison:
+
+| Metric | Baseline | No fusion | Percent change |
+| --- | ---: | ---: | ---: |
+| `T_e` axis, keV | 29.5186 | 28.1658 | -4.583% |
+| `T_i` axis, keV | 21.5374 | 20.3816 | -5.366% |
+| `n_e` axis, m^-3 | 1.32161e20 | 1.32161e20 | +0.000% |
+| `q` axis | 0.992198 | 0.992198 | +0.000% |
+| `Ip`, A | 1.48898e7 | 1.48898e7 | +0.000% |
+| `P_fusion`, W | 7.08397e8 | 0 | -100.000% |
+| `Q_fusion` | 40.3447 | 0 | -100.000% |
+| `q95` | 3.18244 | 3.18244 | +0.000% |
+
+Interpretation:
+
+Turning off fusion has a larger temperature effect than turning off ECRH in
+this short run. Both central electron temperature and central ion temperature
+drop by several percent.
+
+The fusion power and fusion gain go to zero, which is expected because the
+fusion source is disabled. Density, current, and q values barely change over
+this short `0.1 s` window.
+
+Next suggested experiment:
+
+- Turn off `ohmic`, keeping `ecrh`, `fusion`, and `ei_exchange`
+- Compare whether current and electron temperature change in the short run
+
+## Experiment 5: Turn Off Ohmic
+
+Question:
+
+How much does the ohmic source affect the short baseline run?
+
+Baseline:
+
+- Output directory: `torax_outputs/imas_direct_minimal`
+- Sources from IMAS:
+  - `ecrh`
+  - `fusion`
+  - `ohmic`
+  - `ei_exchange`
+- `t_final = 0.1`
+- `fixed_dt = 0.1`
+- `n_rho = 25`
+
+Experiment:
+
+- Output directory: `torax_outputs/no_ohmic`
+- Changed setting: `TORAX_DISABLE_SOURCES=ohmic`
+- Remaining sources:
+  - `ecrh`
+  - `fusion`
+  - `ei_exchange`
+- All other settings kept the same.
+
+Run command:
+
+```bash
+TORAX_DISABLE_SOURCES=ohmic /home/teliyah/miniforge3/envs/TORAX/bin/python \
+  -m torax.run_simulation_main \
+  --config=scripts/imas_torax_config.py \
+  --quit \
+  --output_dir=torax_outputs/no_ohmic
+```
+
+Latest experiment output:
+
+```text
+torax_outputs/no_ohmic/state_history_20260624_140416.nc
+```
+
+Final-state comparison:
+
+| Metric | Baseline | No ohmic | Percent change |
+| --- | ---: | ---: | ---: |
+| `T_e` axis, keV | 29.5186 | 29.5165 | -0.007% |
+| `T_i` axis, keV | 21.5374 | 21.5374 | +0.000% |
+| `n_e` axis, m^-3 | 1.32161e20 | 1.32161e20 | +0.000% |
+| `q` axis | 0.992198 | 0.992198 | +0.000% |
+| `Ip`, A | 1.48898e7 | 1.48898e7 | +0.000% |
+| `P_fusion`, W | 7.08397e8 | 7.08397e8 | +0.000% |
+| `Q_fusion` | 40.3447 | 41.9317 | +3.934% |
+| `q95` | 3.18244 | 3.18244 | +0.000% |
+
+Interpretation:
+
+For this short `0.1 s` run, turning off ohmic has almost no effect on the
+central profiles or global current values. The central electron temperature
+drops by only about `0.007%`.
+
+`Q_fusion` increases slightly because the reported gain depends on heating
+power. Removing a heating source can change the denominator even when fusion
+power itself stays the same.
+
+Next suggested experiment:
+
+- Turn off `ei_exchange`
+- Compare whether separating electron-ion energy exchange changes `T_e` and
+  `T_i`
+
+## Experiment 6: Turn Off Electron-Ion Exchange
+
+Question:
+
+How much does electron-ion energy exchange affect the short baseline run?
+
+Baseline:
+
+- Output directory: `torax_outputs/imas_direct_minimal`
+- Sources from IMAS:
+  - `ecrh`
+  - `fusion`
+  - `ohmic`
+  - `ei_exchange`
+- `t_final = 0.1`
+- `fixed_dt = 0.1`
+- `n_rho = 25`
+
+Experiment:
+
+- Output directory: `torax_outputs/no_ei_exchange`
+- Changed setting: `TORAX_DISABLE_SOURCES=ei_exchange`
+- Remaining sources:
+  - `ecrh`
+  - `fusion`
+  - `ohmic`
+- All other settings kept the same.
+
+Run command:
+
+```bash
+TORAX_DISABLE_SOURCES=ei_exchange /home/teliyah/miniforge3/envs/TORAX/bin/python \
+  -m torax.run_simulation_main \
+  --config=scripts/imas_torax_config.py \
+  --quit \
+  --output_dir=torax_outputs/no_ei_exchange
+```
+
+Latest experiment output:
+
+```text
+torax_outputs/no_ei_exchange/state_history_20260624_142556.nc
+```
+
+Final-state comparison:
+
+| Metric | Baseline | No electron-ion exchange | Percent change |
+| --- | ---: | ---: | ---: |
+| `T_e` axis, keV | 29.5186 | 29.5186 | +0.000% |
+| `T_i` axis, keV | 21.5374 | 21.5374 | +0.000% |
+| `n_e` axis, m^-3 | 1.32161e20 | 1.32161e20 | +0.000% |
+| `q` axis | 0.992198 | 0.992198 | +0.000% |
+| `Ip`, A | 1.48898e7 | 1.48898e7 | +0.000% |
+| `P_fusion`, W | 7.08397e8 | 7.08397e8 | +0.000% |
+| `Q_fusion` | 40.3447 | 40.3447 | +0.000% |
+| `q95` | 3.18244 | 3.18244 | +0.000% |
+
+Interpretation:
+
+For the current short `0.1 s` run and the central/scalar metrics checked here,
+turning off `ei_exchange` produces no visible change from the baseline.
+
+This may mean the prescribed electron-ion exchange source is very small in this
+case, the short time window is not long enough for the effect to show up in
+these simple metrics, or TORAX is still balancing electron-ion exchange through
+another internal model path. The next check should look at full radial profiles
+or source profile outputs, not only central values and global scalars.
+
+Next suggested experiment:
+
+- Compare full profile differences for all source-off cases
+- Add RMS or maximum percent-difference metrics across radius

@@ -56,8 +56,6 @@ def _profile_conditions_from_imas(core_profiles_ids, equilibrium_ids):
 def _sources_from_imas(core_sources_ids):
     sources = copy.deepcopy(core_sources.sources_from_IMAS(core_sources_ids))
 
-    # The default TORAX ICRH model requires a local TORIC surrogate file even
-    # when the IMAS source is prescribed. Keep the minimal baseline runnable.
     sources.pop("icrh", None)
 
     for source_name in DISABLED_SOURCES:
@@ -76,6 +74,77 @@ def _sources_from_imas(core_sources_ids):
             source_config["prescribed_values"] = tuple(prescribed_values)
         else:
             del sources[source_name]
+
+    nbi_rho = None
+    nbi_electron_heat = None
+    nbi_ion_heat = None
+    nbi_current = None
+
+    radiation_electron_loss = None
+    synchrotron_loss = None
+    bootstrap_current = None
+
+    for source in core_sources_ids.source:
+        source_name = str(source.identifier.name)
+        profile = source.profiles_1d[0]
+
+        if source_name == "nbi":
+            nbi_rho = list(profile.grid.rho_tor_norm)
+            nbi_electron_heat = list(profile.electrons.energy)
+            nbi_ion_heat = list(profile.total_ion_energy)
+            nbi_current = list(-1.0 * profile.j_parallel)
+
+        if source_name == "radiation":
+            radiation_electron_loss = list(profile.electrons.energy)
+
+        if source_name == "synchrotron_radiation":
+            synchrotron_electron_loss = list(profile.electrons.energy)
+
+        if source_name == "bootstrap_current":
+            bootstrap_current = list(-1.0 * profile.j_parallel)
+
+           # print("Found bootstrap current")
+           # print("Bootstrap first 5:", bootstrap_current[:5])
+
+    if nbi_rho is not None:
+        electron_heat = nbi_electron_heat
+
+        if radiation_electron_loss is not None:
+            electron_heat = [
+                e + r for e, r in zip(electron_heat, radiation_electron_loss)
+            ]
+
+        if synchrotron_electron_loss is not None:
+            electron_heat = [
+                e + s for e, s in zip(electron_heat, synchrotron_electron_loss)
+            ]
+
+        sources["generic_heat"] = {
+            "mode": "PRESCRIBED",
+            "prescribed_values": (
+                ([T_INITIAL], nbi_rho, [nbi_ion_heat]),
+                ([T_INITIAL], nbi_rho, [electron_heat]),
+            ),
+        }
+
+    current_profile = nbi_current
+
+    if bootstrap_current is not None:
+        current_profile = [
+            n + b
+            for n, b in zip(nbi_current, bootstrap_current)
+        ]
+
+       # print("NBI current first 5:", nbi_current[:5])
+       #print("Bootstrap current first 5:", bootstrap_current[:5])
+       # print("Combined current first 5:", current_profile[:5])
+
+    sources["generic_current"] = {
+        "mode": "PRESCRIBED",
+        "prescribed_values": (
+            ([T_INITIAL], nbi_rho, [current_profile]),
+        ),
+    }
 
     return sources
 
