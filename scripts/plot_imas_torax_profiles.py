@@ -13,6 +13,9 @@ from map_torax_to_imas import read_torax_output
 plots_dir = Path("plots/imas_vs_torax")
 plots_dir.mkdir(parents=True, exist_ok=True)
 
+diff_dir = Path("plots/imas_vs_torax_difference")
+diff_dir.mkdir(parents=True, exist_ok=True)
+
 profiles = read_profiles()
 equilibrium = read_equilibrium()
 torax_initial = read_torax_output(time_index=0)
@@ -21,13 +24,8 @@ torax_final = read_torax_output(time_index=-1)
 rho_imas = profiles["rho"]
 rho_eq = equilibrium["rho"]
 
-rho_torax_profiles = np.linspace(
-    0.0, 1.0, len(torax_initial["electron_temperature"])
-)
-
-rho_torax_q = np.linspace(
-    0.0, 1.0, len(torax_initial["q_profile"])
-)
+rho_torax_profiles = np.linspace(0.0, 1.0, len(torax_final["electron_temperature"]))
+rho_torax_q = np.linspace(0.0, 1.0, len(torax_final["q_profile"]))
 
 
 def make_plot(x_imas, y_imas, x_torax, y_initial, y_final, title, ylabel, filename):
@@ -44,6 +42,21 @@ def make_plot(x_imas, y_imas, x_torax, y_initial, y_final, title, ylabel, filena
     plt.close()
 
 
+def make_difference_plot(x_imas, y_imas, x_torax, y_torax, title, ylabel, filename):
+    torax_on_imas = np.interp(x_imas, x_torax, y_torax)
+    difference = torax_on_imas - y_imas
+
+    plt.figure()
+    plt.plot(x_imas, difference)
+    plt.axhline(0.0, linestyle="--")
+    plt.xlabel("Normalized radius rho")
+    plt.ylabel(ylabel)
+    plt.title(title)
+    plt.grid(True)
+    plt.savefig(diff_dir / filename, dpi=300, bbox_inches="tight")
+    plt.close()
+
+
 make_plot(
     rho_imas,
     profiles["electron_temperature"] * 1e-3,
@@ -53,6 +66,16 @@ make_plot(
     "Electron Temperature: IMAS Input vs TORAX Initial/Final",
     "Electron temperature (keV)",
     "electron_temperature.png",
+)
+
+make_difference_plot(
+    rho_imas,
+    profiles["electron_temperature"] * 1e-3,
+    rho_torax_profiles,
+    torax_final["electron_temperature"],
+    "Difference: TORAX Final - IMAS Electron Temperature",
+    "Difference in electron temperature (keV)",
+    "difference_electron_temperature.png",
 )
 
 make_plot(
@@ -66,6 +89,16 @@ make_plot(
     "ion_temperature.png",
 )
 
+make_difference_plot(
+    rho_imas,
+    profiles["ion_average_temperature"] * 1e-3,
+    rho_torax_profiles,
+    torax_final["ion_temperature"],
+    "Difference: TORAX Final - IMAS Ion Temperature",
+    "Difference in ion temperature (keV)",
+    "difference_ion_temperature.png",
+)
+
 make_plot(
     rho_imas,
     profiles["electron_density"],
@@ -75,6 +108,16 @@ make_plot(
     "Electron Density: IMAS Input vs TORAX Initial/Final",
     "Electron density (m^-3)",
     "electron_density.png",
+)
+
+make_difference_plot(
+    rho_imas,
+    profiles["electron_density"],
+    rho_torax_profiles,
+    torax_final["electron_density"],
+    "Difference: TORAX Final - IMAS Electron Density",
+    "Difference in electron density (m^-3)",
+    "difference_electron_density.png",
 )
 
 make_plot(
@@ -88,4 +131,15 @@ make_plot(
     "q_profile.png",
 )
 
+make_difference_plot(
+    rho_eq,
+    equilibrium["q"],
+    rho_torax_q,
+    torax_final["q_profile"],
+    "Difference: TORAX Final - IMAS q",
+    "Difference in q",
+    "difference_q_profile.png",
+)
+
 print("Plots created successfully in plots/imas_vs_torax/")
+print("Difference plots created successfully in plots/imas_vs_torax_difference/")

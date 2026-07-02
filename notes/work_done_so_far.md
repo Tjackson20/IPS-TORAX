@@ -233,6 +233,104 @@ The results stayed close to the baseline. Most changes were less than about
 1 percent. This is good because it means the short baseline run is not strongly
 dependent on the radial grid size.
 
+## July 2, 2026 - Baseline Verification
+
+Today I focused on making sure the IMAS baseline is as correct as possible
+before moving on to the transport model comparisons.
+
+### Source Verification
+
+I went through every source in the IMAS `core_sources` IDS to see which ones
+actually contain data and which ones are empty. At first I thought some sources,
+like bootstrap current, were empty. After checking the profiles directly, I
+found that bootstrap contains current data even though it does not contain
+electron or ion heating.
+
+Sources that contain useful data for this IMAS case:
+
+- NBI
+- ECRH (EC)
+- Fusion
+- Ohmic
+- Radiation
+- Synchrotron Radiation
+- Bootstrap Current
+
+Sources that were empty or all zeros for this case:
+
+- LH
+- IC
+- Cold Neutrals
+- Charge Exchange
+- Pellet
+
+After checking the data, I updated the TORAX configuration to better match the
+IMAS baseline.
+
+Changes made:
+
+- Combined NBI current with bootstrap current.
+- Combined radiation with the electron heating profile.
+- Combined synchrotron radiation with the electron heating profile.
+- Kept using the existing TORAX sources that already map correctly.
+
+### Spatial Convergence (`n_rho`)
+
+To make sure the grid resolution was not affecting the solution too much, I ran
+the baseline using different values of `n_rho`.
+
+Runs completed:
+
+- 25
+- 100
+- 150
+- 200
+
+The temperature and density profiles changed less as the number of grid points
+increased, showing that the solution is converging.
+
+The q profile matches well over almost the entire plasma, but there is still a
+noticeable difference very close to the magnetic axis (`rho` approximately 0).
+This is something to investigate later, but the rest of the profile agrees
+well.
+
+### Time Step Convergence (`fixed_dt`)
+
+I also tested different fixed time steps.
+
+Runs completed:
+
+- 0.1
+- 0.05
+- 0.025
+- 0.0125
+
+Each time the timestep was reduced, the differences between runs became
+smaller. This shows that the solution is becoming less sensitive to the
+timestep, which is what I expected to see.
+
+### Current Status
+
+At this point I have:
+
+- verified the IMAS source mapping,
+- improved the baseline configuration,
+- completed a spatial convergence study,
+- completed a timestep convergence study,
+- updated the comparison scripts and plots to use the latest baseline.
+
+### Next Steps
+
+The next goal is to start the transport model comparison that my mentor
+suggested.
+
+Planned work:
+
+- Compare QuaLiKiz and TGLF using the verified IMAS baseline.
+- Repeat the comparison for the second IMAS case after it is provided.
+- Continue improving agreement between the IMAS input profiles and the evolved
+  TORAX solution.
+
 ## What This Means
 
 The project has moved past just trying to make TORAX run. Now there is a real
