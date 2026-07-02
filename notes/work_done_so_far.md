@@ -331,6 +331,33 @@ Planned work:
 - Continue improving agreement between the IMAS input profiles and the evolved
   TORAX solution.
 
+## July 2, 2026 - Transport Model Testing
+
+Today I tested different TORAX transport model options after completing the IMAS
+baseline verification.
+
+### QLKNN
+
+- Created a separate QLKNN config file.
+- `qualikiz` was not accepted as a valid `model_name` in this TORAX version.
+- `qlknn` was accepted and successfully ran.
+- TORAX loaded the QLKNN surrogate model from the environment.
+- Compared the QLKNN run against the constant transport baseline.
+- QLKNN changed the electron temperature, ion temperature, and density profiles,
+  while q stayed unchanged.
+
+### TGLF
+
+- Created a separate TGLF config file.
+- TORAX accepted `model_name: "tglf"`.
+- The run started, but failed because the external TGLF executable was not
+  installed.
+- TORAX was looking for `~/tglf`.
+- I checked with `which tglf`, `find`, and Conda, but no local TGLF executable
+  or package was found.
+- Conclusion: the TGLF config is ready, but TGLF cannot be tested until the
+  executable is installed or the correct path is provided.
+
 ## What This Means
 
 The project has moved past just trying to make TORAX run. Now there is a real
