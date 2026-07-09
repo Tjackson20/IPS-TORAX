@@ -110,6 +110,27 @@ make_plot(
     "electron_density.png",
 )
 
+make_plot(
+    rho_imas,
+    profiles["ion_density"],
+    rho_torax_profiles,
+    torax_initial["ion_density"],
+    torax_final["ion_density"],
+    "Ion Density: IMAS Input vs TORAX Initial/Final",
+    "Ion density (m^-3)",
+    "ion_density.png",
+)
+
+make_plot(
+    rho_imas,
+    profiles["ion_density"],
+    rho_torax_profiles,
+    torax_initial["ion_density"],
+    torax_final["ion_density"],
+    "Ion Density: IMAS Input vs TORAX Initial/Final",
+    "Ion density (m^-3)",
+    "ion_density.png",
+)
 make_difference_plot(
     rho_imas,
     profiles["electron_density"],

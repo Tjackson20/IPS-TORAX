@@ -171,8 +171,13 @@ def build_config():
         },
         "sources": _sources_from_imas(core_sources_ids),
         "pedestal": {},
-        "transport": {
+         "transport": {
             "model_name": "tglf",
+            "tglf_exec_path": "/home/teliyah/gacode/tglf/bin/tglf",
+            "output_directory": "torax_tglf_runs",
+            "n_processes": 1,
+            "n_cores_per_process": 1,
+            "verbose": True,
         },
         "neoclassical": {
             "bootstrap_current": {},

@@ -1,4 +1,5 @@
 import imas
+import numpy as np
 
 
 def read_profiles(fpath="data"):
@@ -7,11 +8,19 @@ def read_profiles(fpath="data"):
 
     profile = core_profiles.profiles_1d[0]
 
+    ion_density_total = np.zeros_like(profile.ion[0].density.value)
+    ion_species_names = []
+
+    for ion in profile.ion:
+        ion_density_total += ion.density.value
+        ion_species_names.append(str(ion.label))
+
     profiles = {
         "time": core_profiles.time.value,
         "rho": profile.grid.rho_tor_norm.value,
         "electron_temperature": profile.electrons.temperature.value,
         "electron_density": profile.electrons.density.value,
+        "ion_density": ion_density_total,
         "electron_pressure": profile.electrons.pressure.value,
         "electron_pressure_thermal": profile.electrons.pressure_thermal.value,
         "ion_average_temperature": profile.t_i_average.value,
@@ -20,11 +29,8 @@ def read_profiles(fpath="data"):
         "volume": profile.grid.volume.value,
         "zeff": profile.zeff.value,
         "q": profile.q.value,
-        "ion_species_names": [],
+        "ion_species_names": ion_species_names,
     }
-
-    for ion in profile.ion:
-        profiles["ion_species_names"].append(str(ion.label))
 
     return profiles
 
@@ -37,5 +43,6 @@ if __name__ == "__main__":
     print("Number of rho points:", len(data["rho"]))
     print("Electron temperature first/last:", data["electron_temperature"][0], data["electron_temperature"][-1])
     print("Electron density first/last:", data["electron_density"][0], data["electron_density"][-1])
+    print("Ion density first/last:", data["ion_density"][0], data["ion_density"][-1])
     print("Volume points:", len(data["volume"]))
     print("Ion species:", data["ion_species_names"])
