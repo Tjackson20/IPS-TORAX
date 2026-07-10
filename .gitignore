@@ -7,3 +7,6 @@ __pycache__/
 /torax_outputs/
 __pycache__/
 *.pyc
+torax_tglf_runs/
+tglf_error.txt
+tglf_transport_model_working.py
