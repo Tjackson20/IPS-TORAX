@@ -171,9 +171,10 @@ def build_config():
         },
         "sources": _sources_from_imas(core_sources_ids),
         "pedestal": {},
-        "transport": {
-    "model_name": "qlknn",
-	},
+         "transport": {
+            "model_name": "qualikiz",
+            "n_processes": 1,
+       },
         "neoclassical": {
             "bootstrap_current": {},
         },
