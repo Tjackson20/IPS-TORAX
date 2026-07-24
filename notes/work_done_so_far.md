@@ -1,396 +1,50 @@
 # Work Done So Far
 
-This document explains the main work done in the project so far. It is written
-as a simple progress summary.
+This document summarizes the current progress of the IMAS–TORAX project.
 
-## Main Goal
+## Completed Work
 
-The goal is to run TORAX using IMAS data files directly. The important point is
-that TORAX should read the plasma data from the IMAS files instead of using a
-manual mapping script as the main workflow.
+### IMAS–TORAX Workflow
 
-The IMAS files are in the `data/` folder:
+- Developed an IMAS-driven TORAX workflow for reading plasma profiles, running
+  transport simulations, and writing results back to IMAS.
+- Validated baseline TORAX results against IMAS reference data.
+- Created IMAS ↔ TORAX mapping and comparison utilities.
+- Generated comparison plots for electron density, ion density, electron
+  temperature, ion temperature, and q-profile.
 
-- `data/equilibrium.h5`
-- `data/core_profiles.h5`
-- `data/core_sources.h5`
-- `data/master.h5`
+### QuaLiKiz Integration
 
-## Direct IMAS Loading
+- Integrated the QuaLiKiz transport model into the IMAS-driven TORAX workflow.
+- Developed a dedicated QuaLiKiz configuration.
+- Created comparison scripts for IMAS versus QuaLiKiz simulations.
+- Generated comparison and difference plots to evaluate transport behavior.
 
-We confirmed that TORAX can read the IMAS data directly. The config uses this
-IMAS URI:
+### TGLF Integration
 
-```python
-IMAS_URI = "imas:hdf5?path=data"
-```
+- Installed and configured TGLF for use with TORAX.
+- Documented the installation and setup process.
+- Developed scripts for comparing IMAS and TGLF simulation results.
+- Generated comparison and difference plots for evaluating TGLF transport
+  predictions.
 
-The TORAX config loads these IDSs:
+## Current Work
 
-- `equilibrium`
-- `core_profiles`
-- `core_sources`
+Current research focuses on extending the IMAS-driven TORAX workflow through
+additional plasma physics studies, including:
 
-The IMAS files use DD version `3.42.0`, but TORAX expects DD version `4.0.0`.
-Because of that, the loader must use:
+- Sawtooth transport studies
+- Pedestal analysis and optimization
+- Pellet injection parameter studies
+- Density evolution and particle source analysis
+- Continued improvements to the IMAS–TORAX workflow and comparison utilities
 
-```python
-explicit_convert=True
-```
+## Upcoming Work
 
-This lets IMAS convert the data before TORAX uses it.
-
-## Files Changed
-
-### `scripts/imas_torax_config.py`
-
-This file is now the main direct IMAS TORAX config.
-
-It does these things:
-
-- loads `equilibrium` from IMAS,
-- loads `core_profiles` from IMAS,
-- loads `core_sources` from IMAS,
-- builds TORAX profile conditions using TORAX IMAS tools,
-- builds plasma composition using TORAX IMAS tools,
-- builds sources using TORAX IMAS tools,
-- uses IMAS geometry from the equilibrium file,
-- runs a short baseline simulation.
-
-The baseline settings are:
-
-- `t_final = 0.1`
-- `fixed_dt = 0.1`
-- `n_rho = 25`
-- transport model: `constant`
-- solver: `linear`
-
-The file also supports setting changes from the terminal. For example:
-
-```bash
-TORAX_T_FINAL=1.0
-TORAX_N_RHO=50
-TORAX_FIXED_DT=0.05
-```
-
-This makes it easier to test TORAX settings without changing the baseline
-config every time.
-
-### `scripts/map_torax_to_imas.py`
-
-This file reads TORAX NetCDF output files.
-
-It was changed so it can read either:
-
-- the initial TORAX state with `time_index=0`,
-- the final TORAX state with `time_index=-1`.
-
-This is important because the initial state proves TORAX started from the IMAS
-data. The final state shows what happened after TORAX evolved the plasma.
-
-### `scripts/plot_imas_torax_profiles.py`
-
-This file makes plots comparing IMAS and TORAX.
-
-The plots now show three curves:
-
-- IMAS input,
-- TORAX initial state,
-- TORAX final state.
-
-This helps show that TORAX starts close to the IMAS data and then changes after
-the simulation runs.
-
-The plots are saved in:
-
-```text
-plots/imas_vs_torax/
-```
-
-### `scripts/summarize_torax_output.py`
-
-This file summarizes TORAX output.
-
-It now reads the latest output from the direct IMAS TORAX output folder instead
-of using an old hard-coded file path.
-
-It prints useful information like:
-
-- profile variable shapes,
-- final plasma current,
-- fusion power,
-- fusion gain,
-- q95,
-- total thermal stored energy.
-
-### `scripts/compare_torax_runs.py`
-
-This file compares two TORAX runs across the full radial profile.
-
-It compares a baseline output folder against an experiment output folder. It
-checks:
-
-- `T_e`
-- `T_i`
-- `n_e`
-- `q`
-
-For each profile, it prints:
-
-- RMS difference,
-- maximum absolute difference,
-- maximum percent difference.
-
-This is better than only checking the center value because it tells us how much
-the whole plasma profile changed across radius.
-
-Example:
-
-```bash
-/home/teliyah/miniforge3/envs/TORAX/bin/python scripts/compare_torax_runs.py \
-  --experiment torax_outputs/no_fusion
-```
-
-### `notes/direct_imas_torax_baseline.md`
-
-This note explains the baseline run.
-
-It records:
-
-- which IMAS files are used,
-- which TORAX IMAS functions are used,
-- the baseline TORAX settings,
-- which sources are included,
-- which source was excluded,
-- how the initial TORAX state compares to the IMAS input.
-
-### `notes/torax_setting_experiments.md`
-
-This note records TORAX setting experiments.
-
-So far, it includes:
-
-- a longer simulation time test,
-- a radial grid resolution test.
-
-## Important Results
-
-### TORAX Starts From the IMAS Data
-
-We compared the IMAS input with the TORAX initial state.
-
-The values were very close:
-
-| Quantity | IMAS | TORAX initial |
-| --- | ---: | ---: |
-| Electron temperature at axis | 31.949 keV | 31.9169 keV |
-| Ion temperature at axis | 23.6679 keV | 23.6535 keV |
-| Electron density at axis | 1.16706e20 | 1.16707e20 |
-| Plasma current | 1.5e7 A | 1.5e7 A |
-
-This shows that TORAX is really using the IMAS data files.
-
-### Baseline Run
-
-The baseline run uses:
-
-- `t_final = 0.1`
-- `fixed_dt = 0.1`
-- `n_rho = 25`
-
-This gives a short simulation that is useful as a reference case.
-
-### Longer Time Experiment
-
-We ran a longer case with:
-
-```bash
-TORAX_T_FINAL=1.0
-```
-
-This changed the run from `0.1 s` to `1.0 s`.
-
-Compared to the baseline, the longer run showed:
-
-- electron temperature went down more,
-- ion temperature went down more,
-- electron density went up,
-- plasma current went down.
-
-This makes sense because the plasma had more time to evolve.
-
-### Grid Resolution Experiment
-
-We ran a grid test with:
-
-```bash
-TORAX_N_RHO=50
-```
-
-This changed the radial grid from `n_rho = 25` to `n_rho = 50`.
-
-The results stayed close to the baseline. Most changes were less than about
-1 percent. This is good because it means the short baseline run is not strongly
-dependent on the radial grid size.
-
-## July 2, 2026 - Baseline Verification
-
-Today I focused on making sure the IMAS baseline is as correct as possible
-before moving on to the transport model comparisons.
-
-### Source Verification
-
-I went through every source in the IMAS `core_sources` IDS to see which ones
-actually contain data and which ones are empty. At first I thought some sources,
-like bootstrap current, were empty. After checking the profiles directly, I
-found that bootstrap contains current data even though it does not contain
-electron or ion heating.
-
-Sources that contain useful data for this IMAS case:
-
-- NBI
-- ECRH (EC)
-- Fusion
-- Ohmic
-- Radiation
-- Synchrotron Radiation
-- Bootstrap Current
-
-Sources that were empty or all zeros for this case:
-
-- LH
-- IC
-- Cold Neutrals
-- Charge Exchange
-- Pellet
-
-After checking the data, I updated the TORAX configuration to better match the
-IMAS baseline.
-
-Changes made:
-
-- Combined NBI current with bootstrap current.
-- Combined radiation with the electron heating profile.
-- Combined synchrotron radiation with the electron heating profile.
-- Kept using the existing TORAX sources that already map correctly.
-
-### Spatial Convergence (`n_rho`)
-
-To make sure the grid resolution was not affecting the solution too much, I ran
-the baseline using different values of `n_rho`.
-
-Runs completed:
-
-- 25
-- 100
-- 150
-- 200
-
-The temperature and density profiles changed less as the number of grid points
-increased, showing that the solution is converging.
-
-The q profile matches well over almost the entire plasma, but there is still a
-noticeable difference very close to the magnetic axis (`rho` approximately 0).
-This is something to investigate later, but the rest of the profile agrees
-well.
-
-### Time Step Convergence (`fixed_dt`)
-
-I also tested different fixed time steps.
-
-Runs completed:
-
-- 0.1
-- 0.05
-- 0.025
-- 0.0125
-
-Each time the timestep was reduced, the differences between runs became
-smaller. This shows that the solution is becoming less sensitive to the
-timestep, which is what I expected to see.
-
-### Current Status
-
-At this point I have:
-
-- verified the IMAS source mapping,
-- improved the baseline configuration,
-- completed a spatial convergence study,
-- completed a timestep convergence study,
-- updated the comparison scripts and plots to use the latest baseline.
-
-### Next Steps
-
-The next goal is to start the transport model comparison that my mentor
-suggested.
-
-Planned work:
-
-- Compare QuaLiKiz and TGLF using the verified IMAS baseline.
-- Repeat the comparison for the second IMAS case after it is provided.
-- Continue improving agreement between the IMAS input profiles and the evolved
-  TORAX solution.
-
-## July 2, 2026 - Transport Model Testing
-
-Today I tested different TORAX transport model options after completing the IMAS
-baseline verification.
-
-### QLKNN
-
-- Created a separate QLKNN config file.
-- `qualikiz` was not accepted as a valid `model_name` in this TORAX version.
-- `qlknn` was accepted and successfully ran.
-- TORAX loaded the QLKNN surrogate model from the environment.
-- Compared the QLKNN run against the constant transport baseline.
-- QLKNN changed the electron temperature, ion temperature, and density profiles,
-  while q stayed unchanged.
-
-### TGLF
-
-- Created a separate TGLF config file.
-- TORAX accepted `model_name: "tglf"`.
-- The run started, but failed because the external TGLF executable was not
-  installed.
-- TORAX was looking for `~/tglf`.
-- I checked with `which tglf`, `find`, and Conda, but no local TGLF executable
-  or package was found.
-- Conclusion: the TGLF config is ready, but TGLF cannot be tested until the
-  executable is installed or the correct path is provided.
-
-## What This Means
-
-The project has moved past just trying to make TORAX run. Now there is a real
-workflow:
-
-1. Load IMAS files directly into TORAX.
-2. Run a baseline TORAX simulation.
-3. Check that TORAX starts from the IMAS data.
-4. Change one TORAX setting at a time.
-5. Save each output in a separate folder.
-6. Compare the new run to the baseline.
-7. Write down what changed.
-
-This is useful because it makes the work easier to explain and easier to repeat.
-
-## Good Files to Put on GitHub
-
-These files are useful to commit:
-
-- `scripts/imas_torax_config.py`
-- `scripts/map_torax_to_imas.py`
-- `scripts/plot_imas_torax_profiles.py`
-- `scripts/summarize_torax_output.py`
-- `notes/direct_imas_torax_baseline.md`
-- `notes/torax_setting_experiments.md`
-- `notes/work_done_so_far.md`
-
-The TORAX NetCDF output files in `torax_outputs/` are generated files. They may
-be large, so they usually should not be committed unless the mentor asks for
-them.
-
-## Next Suggested Step
-
-The next good experiment is to turn off one source, such as `ecrh`, and compare
-the result to the baseline. This would show how much that source affects the
-temperature, current, and fusion results.
+- Complete the sawtooth transport studies.
+- Continue pedestal optimization studies.
+- Finalize pellet parameter studies.
+- Compare transport behavior across the baseline, QuaLiKiz, and TGLF models.
+- Organize scripts, plots, and documentation.
+- Integrate the IMAS-driven TORAX workflow into the IPS framework for
+  whole-device modeling.
