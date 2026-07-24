@@ -1,50 +1,120 @@
 # Work Done So Far
 
-This document summarizes the current progress of the IMAS–TORAX project.
+This document provides a high-level summary of the completed work, current
+development efforts, and remaining tasks for the IMAS–TORAX project. A
+detailed chronological record of the project can be found in
+`project_history.md`.
 
-## Completed Work
+## Completed
 
 ### IMAS–TORAX Workflow
 
-- Developed an IMAS-driven TORAX workflow for reading plasma profiles, running
-  transport simulations, and writing results back to IMAS.
-- Validated baseline TORAX results against IMAS reference data.
-- Created IMAS ↔ TORAX mapping and comparison utilities.
-- Generated comparison plots for electron density, ion density, electron
-  temperature, ion temperature, and q-profile.
+- Developed a complete IMAS-driven TORAX read–run–write workflow.
+- Read plasma profiles, equilibrium data, and source terms directly from IMAS.
+- Mapped IMAS data into TORAX inputs.
+- Mapped TORAX outputs back into IMAS-compatible structures.
+- Validated the bidirectional IMAS ↔ TORAX workflow.
+
+### Baseline Validation
+
+- Verified baseline transport simulations against IMAS reference profiles.
+- Built comparison tools for initial and final TORAX states.
+- Added profile-difference metrics and validation plots.
+- Performed time-step and radial-resolution studies.
+
+### Source Studies
+
+- Investigated IMAS source mapping.
+- Evaluated the effects of ECRH, fusion, ohmic heating, radiation, synchrotron
+  radiation, and bootstrap current.
+- Performed controlled source-sensitivity experiments.
 
 ### QuaLiKiz Integration
 
-- Integrated the QuaLiKiz transport model into the IMAS-driven TORAX workflow.
-- Developed a dedicated QuaLiKiz configuration.
-- Created comparison scripts for IMAS versus QuaLiKiz simulations.
-- Generated comparison and difference plots to evaluate transport behavior.
+- Integrated QuaLiKiz into the IMAS-driven TORAX workflow.
+- Ran QuaLiKiz transport simulations.
+- Generated IMAS vs. QuaLiKiz comparison and difference plots.
 
 ### TGLF Integration
 
-- Installed and configured TGLF for use with TORAX.
-- Documented the installation and setup process.
-- Developed scripts for comparing IMAS and TGLF simulation results.
-- Generated comparison and difference plots for evaluating TGLF transport
-  predictions.
+- Installed and configured TGLF through GACODE.
+- Connected TGLF to TORAX.
+- Resolved execution-path issues.
+- Successfully ran coupled TORAX–TGLF simulations.
+- Generated IMAS vs. TGLF comparison plots.
 
-## Current Work
+### Sawtooth Studies
 
-Current research focuses on extending the IMAS-driven TORAX workflow through
-additional plasma physics studies, including:
+- Developed the framework for sawtooth transport studies.
+- Implemented sawtooth-on and sawtooth-off simulations.
+- Created comparison and diagnostic plotting tools.
+- Began investigating mixing-radius and flattening-factor configurations.
 
-- Sawtooth transport studies
-- Pedestal analysis and optimization
-- Pellet injection parameter studies
-- Density evolution and particle source analysis
-- Continued improvements to the IMAS–TORAX workflow and comparison utilities
+### Pedestal Studies
 
-## Upcoming Work
+- Developed pedestal detection and analysis tools.
+- Implemented pedestal comparison utilities.
+- Began investigating pedestal location and evolution.
 
-- Complete the sawtooth transport studies.
-- Continue pedestal optimization studies.
-- Finalize pellet parameter studies.
-- Compare transport behavior across the baseline, QuaLiKiz, and TGLF models.
-- Organize scripts, plots, and documentation.
-- Integrate the IMAS-driven TORAX workflow into the IPS framework for
-  whole-device modeling.
+### Pellet Studies
+
+- Developed a configurable pellet source for TORAX.
+- Created parameter studies for pellet strength, width, and deposition
+  location.
+- Built comparison and optimization utilities.
+
+### Density Evolution
+
+- Verified electron and ion density evolution.
+- Developed particle-source diagnostics.
+- Investigated source balance throughout simulations.
+
+### Documentation
+
+- Wrote comprehensive project documentation.
+- Documented the complete IMAS–TORAX workflow.
+- Created a detailed project history covering the full internship.
+- Maintained progress notes and development summaries.
+- Improved repository readability for future contributors.
+
+### Repository Improvements
+
+- Organized scripts, experiment outputs, and supporting files.
+- Added reusable plotting and comparison utilities.
+- Improved repository structure and version control.
+- Cleaned and organized commits into logical project milestones.
+
+---
+
+# Current Work
+
+- Finalizing sawtooth transport analysis.
+- Refining pedestal location and optimization.
+- Completing pellet parameter studies.
+- Comparing baseline, QuaLiKiz, and TGLF transport models using consistent
+  numerical settings.
+- Investigating high-resolution q-profile convergence behavior.
+- Continuing repository cleanup, documentation, and code organization.
+
+---
+
+# Upcoming Work
+
+- Complete remaining sawtooth analysis.
+- Finalize pedestal optimization.
+- Finalize pellet optimization.
+- Finish transport-model comparisons.
+- Consolidate duplicate and experimental scripts.
+- Organize plots and documentation.
+- Integrate the completed IMAS-driven TORAX workflow into the IPS framework
+  for whole-device modeling.
+
+---
+
+## Project Status
+
+The core IMAS-driven TORAX workflow has been completed and validated. Current
+efforts focus on extending the workflow through additional physics studies,
+including sawtooth, pedestal, pellet, and transport-model comparisons, while
+preparing the project for future integration into the Integrated Plasma
+Simulator (IPS).
